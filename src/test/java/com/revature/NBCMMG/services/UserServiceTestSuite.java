@@ -43,6 +43,19 @@ public class UserServiceTestSuite {
     }
 
     @Test
+    public void register_throwsException_whenGivenDuplicateUser() {
+        User duplicateUser = new User("duplicate", "duplicate", "duplicate", 0, 0);
+        User user = new User("duplicate", "duplicate", "duplicate", 0, 0);
+        String expectedMessage = "The provided username is already taken!";
+
+        when(mockUserRepository.findUserByUsername(duplicateUser.getUsername())).thenReturn(user);
+        when(sut.isUsernameTaken(duplicateUser.getUsername())).thenReturn(true);
+
+        ResourcePersistenceException e = assertThrows(ResourcePersistenceException.class, () -> sut.register(user));
+        assertEquals(expectedMessage, e.getMessage());
+    }
+
+    @Test
     public void login_returnsPrincipal_whenUser_providesValidCredentials() {
         String username = "valid";
         String password = "valid";
@@ -55,5 +68,19 @@ public class UserServiceTestSuite {
         Principal actualResult = sut.login(username, password);
 
         assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void login_throwsException_whenUser_providesInvalidCredentials() {
+        String username = "username";
+        String password = "password";
+
+        when(mockPasswordUtils.generateSecurePassword(password)).thenReturn("encryptedPassword");
+        when(mockUserRepository.findUserByUsernameAndPassword(username, "encryptedPassword")).thenReturn(null);
+
+        AuthenticationException e = assertThrows(AuthenticationException.class, () -> sut.login(username, password));
+
+        verify(mockPasswordUtils, times(1)).generateSecurePassword(anyString());
+        verify(mockUserRepository, times(1)).findUserByUsernameAndPassword(anyString(), anyString());
     }
 }
