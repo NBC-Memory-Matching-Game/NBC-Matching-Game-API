@@ -1,7 +1,10 @@
 package com.revature.NBCMMG.services;
 
 import com.revature.NBCMMG.datasources.models.User;
+import com.revature.NBCMMG.datasources.repositories.UserRepository;
 import com.revature.NBCMMG.utils.PasswordUtils;
+import com.revature.NBCMMG.utils.exceptions.AuthenticationException;
+import com.revature.NBCMMG.web.dtos.Principal;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,7 +21,7 @@ public class UserServiceTestSuite {
     public void beforeEachTest() {
         mockPasswordUtils = mock(PasswordUtils.class);
         mockUserRepository = mock(UserRepository.class);
-        sut = new UserService(mockUserRepository);
+        sut = new UserService(mockUserRepository, mockPasswordUtils);
     }
 
     @AfterEach
