@@ -1,5 +1,7 @@
 package com.revature.NBCMMG.services;
 
+import com.revature.NBCMMG.datasources.models.User;
+import com.revature.NBCMMG.utils.PasswordUtils;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
