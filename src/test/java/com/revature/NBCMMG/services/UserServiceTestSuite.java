@@ -4,6 +4,7 @@ import com.revature.NBCMMG.datasources.models.User;
 import com.revature.NBCMMG.datasources.repositories.UserRepository;
 import com.revature.NBCMMG.utils.PasswordUtils;
 import com.revature.NBCMMG.utils.exceptions.AuthenticationException;
+import com.revature.NBCMMG.utils.exceptions.ResourcePersistenceException;
 import com.revature.NBCMMG.web.dtos.Principal;
 import org.junit.jupiter.api.*;
 
@@ -34,6 +35,7 @@ public class UserServiceTestSuite {
         String username = "valid";
         User expectedResult = new User("valid", "valid", "valid", 0, 0);
         User validUser = new User("valid", "valid", "valid", 0, 0);
+
         when(mockUserRepository.findUserByUsername(username)).thenReturn(null);
         when(mockUserRepository.save(any())).thenReturn(expectedResult);
         when(mockPasswordUtils.generateSecurePassword(validUser.getPassword())).thenReturn("encryptedPassword");
@@ -53,8 +55,7 @@ public class UserServiceTestSuite {
         User user = new User("duplicate", "duplicate", "duplicate", 0, 0);
         String expectedMessage = "The provided username is already taken!";
 
-        when(mockUserRepository.findUserByUsername(duplicateUser.getUsername())).thenReturn(user);
-        when(sut.isUsernameTaken(duplicateUser.getUsername())).thenReturn(true);
+        when(mockUserRepository.findUserByUsername(anyString())).thenReturn(user);
 
         ResourcePersistenceException e = assertThrows(ResourcePersistenceException.class, () -> sut.register(user));
         assertEquals(expectedMessage, e.getMessage());
